@@ -15,7 +15,7 @@ app.use(fileUpload())
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.o9fdd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-
+console.log(process.env.DB_PASS, process.env.DB_USER)
 async function run() {
     try {
         await client.connect();
@@ -25,7 +25,7 @@ async function run() {
         const orderCollection = database.collection('orders')
         const userCollection = database.collection('users')
         const reviewCollection = database.collection('reviews')
-
+        const newsCollection = database.collection('newses')
         // all services data
         app.get('/services', async (req, res) => {
             const cursor = serviceCollection.find({});
@@ -102,6 +102,13 @@ async function run() {
             const result = await cursor.toArray()
             res.send(result)
         })
+        // News 
+        app.get('/newses', async (req, res) => {
+            const cursor = newsCollection.find({})
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+
     } finally {
 
     }

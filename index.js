@@ -38,23 +38,49 @@ async function run() {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
             const service = await serviceCollection.findOne(query)
-            console.log(service)
+            // console.log(service)
             res.json(service)
         })
+        // update services Collection............
+        app.put('/service', async (req, res) => {
+            const id = req.query.id
+            const filter = { _id: ObjectId(id) }
+            const editData = req.body;
+            console.log(editData, id)
+            const updateDoc = { $set: { name: editData.name, price: editData.price, description: editData.description, image: editData.image } }
+            const result = await serviceCollection.updateOne(filter, updateDoc)
+            console.log(result)
+            res.json(result)
+        })
+
+        // Delete service.....
+        app.delete('/service/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const result = await serviceCollection.deleteOne(filter)
+            res.json(result)
+        })
+        // insert service 
+        app.post('/service', async (req, res) => {
+            const cursor = req.body;
+            const result = await serviceCollection.insertOne(cursor)
+            res.json(result)
+        })
+
         // insert orders................
         app.post('/order', async (req, res) => {
             const order = req.body;
             const result = await orderCollection.insertOne(order)
-            console.log(result)
+            // console.log(result)
             res.json(result)
         })
         // all order 
-        // app.get('/orders', async (req, res) => {
-        //     const cursor = orderCollection.find({})
-        //     const result = await cursor.toArray();
-        //     console.log(result)
-        //     res.send(result)
-        // })
+        app.get('/orders', async (req, res) => {
+            const cursor = orderCollection.find({})
+            const result = await cursor.toArray();
+            console.log(result)
+            res.send(result)
+        })
         // orders filter by email
         app.get('/orderbyEmail', async (req, res) => {
             const email = req.query.email;
@@ -72,13 +98,10 @@ async function run() {
         })
         // update image
         app.put('/user', async (req, res) => {
-            const email = req.body.email;
+            const email = req.query.email;
             const filter = { email: email }
-            const pic = req.files.image
-            const picData = pic.data;
-            const encodePic = picData.toString('base64');
-            const imageBuffer = Buffer.from(encodePic, 'base64')
-            const updateDoc = { $set: { image: imageBuffer } }
+            const image = req.body.image;
+            const updateDoc = { $set: { image: image } }
             const result = await userCollection.updateOne(filter, updateDoc)
             res.json(result)
         })
@@ -87,8 +110,28 @@ async function run() {
             const email = req.query.email;
             const query = { email: email }
             const result = await userCollection.findOne(query)
-            console.log(result)
+            // console.log(result)
             res.send(result)
+        })
+        // update user role
+        app.put('/admin', async (req, res) => {
+            const email = req.query.email;
+            const filter = { email: email };
+            const updateDoc = { $set: { role: "admin" } };
+            const result = await userCollection.updateOne(filter, updateDoc)
+            res.json(result);
+        })
+        // admin validation
+        app.get('/isadmin/:email', async (req, res) => {
+            const email = req.params.email;
+            console.log(email)
+            const query = { email: email };
+            const user = await userCollection.findOne(query);
+            let isAdmin = false;
+            if (user?.role === "admin") {
+                isAdmin = true;
+            }
+            res.json({ admin: isAdmin })
         })
         // insert review
         app.post('/review', async (req, res) => {

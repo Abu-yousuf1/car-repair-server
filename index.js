@@ -26,14 +26,15 @@ async function run() {
         const userCollection = database.collection('users')
         const reviewCollection = database.collection('reviews')
         const newsCollection = database.collection('newses')
-        // all services data
+
+        // Find all services in home page .....
         app.get('/services', async (req, res) => {
             const cursor = serviceCollection.find({});
             const result = await cursor.toArray();
             res.send(result)
         })
 
-        // filter by id all services data
+        // filter by id all services data for service details
         app.get('/service/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
@@ -41,7 +42,7 @@ async function run() {
             // console.log(service)
             res.json(service)
         })
-        // update services Collection............
+        // update services Collection for admin in dashboard............
         app.put('/service', async (req, res) => {
             const id = req.query.id
             const filter = { _id: ObjectId(id) }
@@ -53,14 +54,15 @@ async function run() {
             res.json(result)
         })
 
-        // Delete service.....
+        // Delete service in dashboard.....
         app.delete('/service/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) }
             const result = await serviceCollection.deleteOne(filter)
             res.json(result)
         })
-        // insert service 
+
+        // insert service for admin in dashboard......... 
         app.post('/service', async (req, res) => {
             const cursor = req.body;
             const result = await serviceCollection.insertOne(cursor)
@@ -71,17 +73,27 @@ async function run() {
         app.post('/order', async (req, res) => {
             const order = req.body;
             const result = await orderCollection.insertOne(order)
-            // console.log(result)
             res.json(result)
         })
-        // all order 
+
+        // Delete order form dashboard............
+        app.delete('/order/:id', async (req, res) => {
+            const id = req.params.id;
+            const result = await orderCollection.deleteOne({ _id: ObjectId(id) })
+            res.json(result)
+        })
+
+
+
+        // Find all orders for admin in dashboard.......... 
         app.get('/orders', async (req, res) => {
             const cursor = orderCollection.find({})
             const result = await cursor.toArray();
             console.log(result)
             res.send(result)
         })
-        // orders filter by email
+
+        // orders filter by email for user in dashboard.........
         app.get('/orderbyEmail', async (req, res) => {
             const email = req.query.email;
             const query = { email: email }
@@ -89,14 +101,16 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result)
         })
-        // save user in database
+
+        // save user in database............ 
         app.post('/user', async (req, res) => {
             const user = req.body
             const cursor = await userCollection.insertOne(user);
             console.log(cursor)
             res.json(cursor)
         })
-        // update image
+
+        // update image for user collection...................
         app.put('/user', async (req, res) => {
             const email = req.query.email;
             const filter = { email: email }
@@ -105,7 +119,8 @@ async function run() {
             const result = await userCollection.updateOne(filter, updateDoc)
             res.json(result)
         })
-        // find by email
+
+        // User find by email 
         app.get('/userByEmail', async (req, res) => {
             const email = req.query.email;
             const query = { email: email }
@@ -113,7 +128,8 @@ async function run() {
             // console.log(result)
             res.send(result)
         })
-        // update user role
+
+        // update user role....
         app.put('/admin', async (req, res) => {
             const email = req.query.email;
             const filter = { email: email };
@@ -121,7 +137,8 @@ async function run() {
             const result = await userCollection.updateOne(filter, updateDoc)
             res.json(result);
         })
-        // admin validation
+
+        // admin validation...
         app.get('/isadmin/:email', async (req, res) => {
             const email = req.params.email;
             console.log(email)
@@ -133,19 +150,22 @@ async function run() {
             }
             res.json({ admin: isAdmin })
         })
-        // insert review
+
+        // insert review for user in dashboard......
         app.post('/review', async (req, res) => {
             const cursor = req.body;
             const result = await reviewCollection.insertOne(cursor)
             res.json(result)
         })
-        // fins all review
+
+        // Find all reviews in home page.
         app.get('/review', async (req, res) => {
             const cursor = reviewCollection.find({})
             const result = await cursor.toArray()
             res.send(result)
         })
-        // News 
+
+        // News  
         app.get('/newses', async (req, res) => {
             const cursor = newsCollection.find({})
             const result = await cursor.toArray()

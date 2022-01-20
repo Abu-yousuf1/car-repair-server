@@ -172,6 +172,14 @@ async function run() {
             res.send(result)
         })
 
+        // Post news in database..........
+        app.post('/news', async (req, res) => {
+            const cursor = req.body;
+            console.log(cursor)
+            const result = await newsCollection.insertOne(cursor)
+            res.json(result)
+        })
+
     } finally {
 
     }
